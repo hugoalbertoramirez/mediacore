@@ -1,0 +1,184 @@
+﻿@model mediacore.ViewModels.ViewModelNews
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>News</h2>
+
+@*<p>
+        <a asp-action="Create">Create New</a>
+    </p>*@
+<form asp-action="Index" method="get">
+
+    <div class="form-actions no-color">
+        <div class="form-group">
+
+            <div class="row">
+
+                <div class="col-md-2 form-group">
+                    <label class="control-label">Related word:</label>
+                    <input type="text" class="form-control" name="RelatedWord" value="@ViewData["RelatedWord"]" />
+                </div>
+
+                <div class="col-md-2 form-group">
+                    <label class="control-label">Publisher:</label>
+                    <select asp-for="idPublisher" asp-items="ViewBag.MainPublishers" class="form-control">
+                        <option value="-1">select a publisher</option>
+                        <option value="-2">All main publishers</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2 form-group">
+                    <label class="control-label">Topic:</label>
+                    <select asp-for="idTopic" asp-items="ViewBag.Topics" class="form-control">
+                        <option value="-1">select a topic</option>
+                        <option value="-2">All main topics</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 form-group">
+                    <label class="control-label">Start date:</label>
+                    <input asp-for="startDate" class="form-control" name="startDate" />
+                </div>
+
+                <div class="col-md-3 form-group">
+                    <label class="control-label">End date:</label>
+                    <input asp-for="endDate" class="form-control" name="endDate" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2 form-group">
+                    <label class="control-label">State:</label>
+                    <select asp-for="idState" asp-items="ViewBag.States" class="form-control">
+                        <option value="-1">select a state</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2 form-group">
+                    <label class="control-label">News by page:</label>
+                    <input asp-for="newsByPage" type="number" class="form-control" name="newsByPage" />
+                </div>
+
+                <div class="col-md-2 form-group">
+                    <label class="control-label">Id:</label>
+                    <input type="number" class="form-control" name="idNews" value="@ViewData["idNews"]" />
+                </div>
+
+                <div class="col-md-2 form-group">
+                    <label class="control-label">Importance:</label>
+                    <select asp-for="areImportants" class="form-control" name="areImportants">
+                        <option value="1">All</option>
+                        <option value="2">Important</option>
+                    </select>
+                </div>
+
+
+                <div class="col-md-2 form-group">
+                    <br />
+                    <input type="submit" value="Search" class="btn btn-default" />
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @*<a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]">Date Published</a>*@
+                Date Published
+            </th>
+            @*<th>
+                    Publisher
+                </th>*@
+            <th>
+                @*<a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]">News</a>*@
+                News
+            </th>
+            <th>
+                Importance
+            </th>
+            <th>
+                Clasification
+            </th>
+            <th>
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.news)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DatePublished)
+                </td>
+                @*<td>
+                        @Html.DisplayFor(modelItem => item.NewsPublisher.FirstOrDefault().IdPublisherNavigation.Name)
+                    </td>*@
+                <td>
+                    <a href="@Html.DisplayFor(modelItem => item.Url)" target="_blank"> @Html.DisplayFor(modelItem => item.Name)</a>
+                    <p>@Html.DisplayFor(modelItem => item.Url)</p>
+                    <p>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </p>
+                    <p>
+                        <i>
+                            Id: @Html.DisplayFor(modelItem => item.Id)
+                            <a target="_blank" asp-controller="ImportantNews" asp-action="Create" asp-route-id="@item.Id">Set as headline</a> |
+                            <a target="_blank" asp-action="Edit" asp-route-id="@item.Id">Edit new</a>
+                        </i>
+                    </p>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ImportantNews.SingleOrDefault().Status)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdClassificationNavigation.Name)
+                </td>
+                @*<td>
+                        @Html.DisplayFor(modelItem => item.IdOpinionNavigation.Score)
+                    </td>*@
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                @*<td>
+                        <p>
+                            <a target="_blank" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        </p>
+                        <p>
+                            <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                        </p>
+                        <p>
+                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        </p>
+                    </td>*@
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-page="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-page="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Next
+</a>
